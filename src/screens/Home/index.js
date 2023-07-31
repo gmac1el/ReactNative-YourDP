@@ -72,21 +72,27 @@ export function Home() {
   const [location, setLocation] = useState(null);
   const [canPunch, setCanPunch] = useState(false);
 
+  
+  //PERMISSÃO DE USAR A LOCALIZAÇÃO
   async function requestLocationPermissions() {
     const { granted } = await requestForegroundPermissionsAsync();
 
     if (granted) {
       const currentPosition = await getCurrentPositionAsync();
-      setLocation(currentPosition);
-
-      // console.log(currentPosition)
+      if (currentPosition && currentPosition.coords) {
+        setLocation(currentPosition);
+      } else {
+        console.error('Localização inválida ou ausente.');
+      }
     }
   }
+
 
   useEffect(() => {
     requestLocationPermissions();
   }, []);
 
+  //ATUALIZA A LOCALIZAÇÃO
   useEffect(() => {
 
     watchHeadingAsync({
@@ -101,16 +107,20 @@ export function Home() {
 
   }, [])
 
+  
+  //VERIFICA SE A LOCALIZAÇÃO EXISTE E CALCULA A DISTÂNCIA
   useEffect(() => {
-
     async function checkLocation() {
-      const distance = calculateDistance(location.coords, FIXED_LOCATION);
-      setCanPunch(distance >= RADIUS);
-      // console.log(distance)
+      if (location && location.coords) {
+        const distance = calculateDistance(location.coords, FIXED_LOCATION);
+        setCanPunch(distance >= RADIUS);
+        // console.log(distance)
+      }
     }
 
     checkLocation();
-  }, [location])
+  }, [location]);
+
 
   const [modalVisible, setModalVisible] = useState(false);
 

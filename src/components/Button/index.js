@@ -1,5 +1,8 @@
 import { View, Button, StyleSheet, TouchableOpacity, Text, Alert, Modal } from "react-native";
 import Toast from 'react-native-toast-message';
+// import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import * as LocalAuthentication from 'expo-local-authentication';
 
 import { useState, useEffect } from "react";
@@ -133,6 +136,9 @@ export function ButtonPoint(props) {
 
   const ShowNotification = props.Status ? showToast : handleAuthent;
 
+  //PEGAR TEMPO 
+  const timeStringModal = date.toLocaleTimeString([], timeOptions);
+
   return (
     <View>
       <TouchableOpacity onPress={ShowNotification} style={[styles.btn, props.Status && styles.btnBlock]}>
@@ -145,7 +151,69 @@ export function ButtonPoint(props) {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.cardModal}>
+
+          <Text style={styles.titleModal}>Escolha o tipo de ponto:</Text>
+
+          <Text style={styles.timeModal}>{timeStringModal}</Text>
+
+          <View style={styles.viewCardButton}>
+
+            <TouchableOpacity style={styles.cardButton}>
+              <View style={styles.titleCardButton}>
+                <Text style={[styles.textCardButton, { fontSize: 35 }]}>1</Text>
+                <Text style={[styles.textCardButton, { fontWeight: '400' }]}>Entrada</Text>
+              </View>
+
+              <View style={styles.iconCardButton}>
+                <Ionicons name="log-in-outline" size={50} color="#ffff" />
+              </View>
+
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#00B4D8' }]}>
+              <View style={styles.titleCardButton}>
+                <Text style={[styles.textCardButton, { fontSize: 35, color: '#001d3d' }]}>2</Text>
+                <Text style={[styles.textCardButton, { fontWeight: '400', color: '#001d3d' }]}>Pausa</Text>
+              </View>
+
+              <View style={styles.iconCardButton}>
+                <Ionicons name="pause-outline" size={50} color="#001d3d" />
+              </View>
+
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.viewCardButton, {marginTop: 15}]}>
+
+            <TouchableOpacity style={[styles.cardButton, {backgroundColor: '#90E0EF'}]}>
+              <View style={styles.titleCardButton}>
+                <Text style={[styles.textCardButton, { fontSize: 35, color: '#001d3d' }]}>3</Text>
+                <Text style={[styles.textCardButton, { fontWeight: '400', color: '#001d3d' }]}>Retorno</Text>
+              </View>
+
+              <View style={styles.iconCardButton}>
+                <Ionicons name="play-outline" size={50} color="#001d3d" />
+              </View>
+
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#03045E' }]}>
+              <View style={styles.titleCardButton}>
+                <Text style={[styles.textCardButton, { fontSize: 35 }]}>4</Text>
+                <Text style={[styles.textCardButton, { fontWeight: '400'}]}>Saida</Text>
+              </View>
+
+              <View style={styles.iconCardButton}>
+                <Ionicons name="log-out-outline" size={50} color="#fff" />
+              </View>
+
+            </TouchableOpacity>
+          </View>
+
+
+
+
+          {/* <View style={styles.cardModal}>
             <Text style={styles.titleModal}>Entrada:</Text>
             <DateComponent />
             <TouchableOpacity style={styles.btnModal} onPress={handleUpdatePoint}>
@@ -159,9 +227,9 @@ export function ButtonPoint(props) {
             <TouchableOpacity style={styles.btnModal} onPress={handleUpdateLastPoint}>
               <Text style={styles.textBtn}>Bater ponto</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
-          <View style={styles.cardModal}>
+          {/* <View style={styles.cardModal}>
             <Text style={styles.titleModal}>Saida:</Text>
             <DateComponent />
             <TouchableOpacity style={styles.btnModal} onPress={handleUpdateLastPoint}>
@@ -175,7 +243,7 @@ export function ButtonPoint(props) {
             <TouchableOpacity style={styles.btnModal} onPress={handleUpdateLastPoint}>
               <Text style={styles.textBtn}>Bater ponto</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
 
           <TouchableOpacity style={styles.iconModal} title="Fechar Modal" onPress={() => setModalVisible(false)}>
@@ -224,6 +292,37 @@ const styles = StyleSheet.create({
 
   },
 
+  viewCardButton: {
+    flexDirection: 'row',
+    gap: 15,
+    marginTop: 50
+  },
+
+  cardButton: {
+    backgroundColor: "#0077B6",
+    width: 150,
+    height: 220
+  },
+
+  titleCardButton: {
+    flexDirection: "column",
+    padding: 20,
+
+  },
+
+  textCardButton: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: 800
+  },
+
+  iconCardButton: {
+    flexDirection: "row",
+    paddingRight: 15,
+    paddingTop: 15,
+    justifyContent: "flex-end"
+  },
+
   iconModal: {
     position: 'absolute',
     top: -40,
@@ -233,8 +332,15 @@ const styles = StyleSheet.create({
 
   titleModal: {
     color: "#000",
-    fontWeight: "600",
-    fontSize: 25
+    fontWeight: "400",
+    fontSize: 24
+  },
+
+  timeModal: {
+    color: "#000",
+    fontWeight: "700",
+    fontSize: 30,
+    marginTop: 10
   },
 
   cardModal: {

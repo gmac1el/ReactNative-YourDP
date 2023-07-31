@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-
+import { TextInput } from 'react-native-paper';
 
 import * as SecureStore from 'expo-secure-store';
 
 import {
   SafeAreaView,
-  TextInput,
+  // TextInput,
   Button,
   StyleSheet,
   Text,
@@ -59,17 +59,26 @@ export function LoginScreen({ onLoginSuccess }) {
       {/* <Text style={styles.heading}>Login</Text> */}
       <Image style={styles.imageLogo} source={require('../../../assets/LogoApp.webp')} />
       <TextInput
-        placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
+        mode="outlined"
+        outlineColor="#000"
+        activeOutlineColor="#2D1CC6"
+        textColor="#2D1CC6"
+    
       />
       <TextInput
-        placeholder="Senha"
+        label="Senha"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
+        mode="outlined"
+        outlineColor="#000"
+        activeOutlineColor="#2D1CC6"
+        textColor="#2D1CC6"
       />
 
 
@@ -96,12 +105,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    height: 40,
+    height: 50,
     width: "100%",
-    borderWidth: 1,
     borderRadius: 4,
     marginBottom: 16,
     paddingHorizontal: 10,
+    
   },
   error: {
     color: "red",
