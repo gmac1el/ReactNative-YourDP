@@ -74,7 +74,7 @@ export function TabRoutes() {
 
           },
           tabBarIcon: ({ focused }) => {
-            const iconName = focused ? 'home' : 'home-outline';
+            const iconName = focused ? 'reader' : 'reader-outline';
             return <Ionicons name={iconName} size={25} color='#2D1CC6' />;
           }
         }}
