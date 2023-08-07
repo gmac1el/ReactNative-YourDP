@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { FAB } from 'react-native-paper';
@@ -9,22 +9,13 @@ import ModalContent from './components/ModalContents';
 
 import { Container } from '../Styles';
 
+import * as SecureStore from 'expo-secure-store';
 
 const JustificativaForm = () => {
-  const [motivo, setMotivo] = useState('');
-  const [data, setData] = useState('');
-  const [observacao, setObservacao] = useState('');
+  const [dataUser, setDataUser] = useState({})
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleSubmit = () => {
-    console.log('Motivo:', motivo);
-    console.log('Data:', data);
-    console.log('Observação:', observacao);
-  };
 
-  const handleUploadImage = () => {
-    console.log('Imagem enviada');
-  };
 
   const [userData, setUserData] = useState(null);
 
@@ -32,7 +23,65 @@ const JustificativaForm = () => {
     setUserData(data.msg.ponto);
   };
 
+  const fetchData = async () => {
+    const id = await SecureStore.getItemAsync('idUser');
+    const token = await SecureStore.getItemAsync('token')
+    try {
+      const response = await fetch(`https://api-yourdp.onrender.com/user/${id}`,
+        {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        });
+      const data = await response.json();
+      setUserData(data);
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+    }
+  };
 
+  useEffect(() => {
+    // Chama a função fetchData inicialmente ao montar o componente
+    fetchData();
+
+    // Configura um intervalo para atualizar os dados a cada 5 segundos (ou o intervalo desejado)
+    // const intervalId = setInterval(fetchData, 5000);
+
+    // Limpa o intervalo quando o componente é desmontado
+    // return () => clearInterval(intervalId);
+  }, []);
+
+
+  // useEffect(() => {
+
+  //   try {
+
+  //     const getDataUser = async () => {
+
+  //       const id = await SecureStore.getItemAsync('idUser');
+  //       const token = await SecureStore.getItemAsync('token')
+
+  //       const dataUser = await fetch(`https://api-yourdp.onrender.com/user/${id}`, {
+  //         method: 'GET',
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       })
+
+  //       // const response = await dataUser.json()
+
+  //       setDataUser(dataUser)
+  //     }
+
+  //     getDataUser()
+
+  //   } catch (err) {
+  //     Alert.Alert(err)
+  //   }
+
+
+  // }, [userData])
+
+
+  console.log(userData)
 
   return (
 
@@ -40,6 +89,10 @@ const JustificativaForm = () => {
     <Container>
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollStyle} style={{ width: '100%' }}>
         <TopBar onUserDataLoaded={handleUserDataLoaded} />
+
+
+
+
 
 
         <Modal
@@ -54,7 +107,7 @@ const JustificativaForm = () => {
             <ModalContent />
 
             <TouchableOpacity style={styles.iconModal} title="Fechar Modal" onPress={() => setModalVisible(false)}>
-              <Text style={[styles.textModal, {fontWeight: 700, fontSize: 25, marginRight: 10}]}>x</Text>
+              <Text style={[styles.textModal, { fontWeight: 700, fontSize: 25, marginRight: 10 }]}>x</Text>
             </TouchableOpacity>
           </View>
 

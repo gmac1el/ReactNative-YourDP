@@ -5,9 +5,12 @@ import { View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, Sa
 import * as ImagePicker from 'expo-image-picker';
 //import * as Permissions from 'expo-permissions'; //
 import * as MediaLibrary from 'expo-media-library';
+import * as SecureStore from 'expo-secure-store';
+
 
 import { TextInput } from 'react-native-paper';
-import axios from 'axios';
+
+
 
 
 
@@ -15,16 +18,16 @@ import axios from 'axios';
 export default function ModalContent() {
 
   const [motivo, setMotivo] = useState('');
-  const [data, setData] = useState('');
+  const [dataInput, setData] = useState('');
   const [observacao, setObservacao] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
 
+  const [imageUrl, setImageUrl] = useState(null);
 
-  const handleSubmit = () => {
-    console.log('Motivo:', motivo);
-    console.log('Data:', data);
-    console.log('Observação:', observacao);
-  };
+  // const handleSubmit = () => {
+  //   console.log('Motivo:', motivo);
+  //   console.log('Data:', data);
+  //   console.log('Observação:', observacao);
+  // };
 
   const handleUploadImage = () => {
     console.log('Imagem enviada');
@@ -32,9 +35,9 @@ export default function ModalContent() {
 
   const [userData, setUserData] = useState(null);
 
-  const handleUserDataLoaded = (data) => {
-    setUserData(data.msg.ponto);
-  };
+  // const handleUserDataLoaded = (data) => {
+  //   setUserData(data.msg.ponto);
+  // };
 
 
   const pickFromGalary = async () => {
@@ -50,9 +53,13 @@ export default function ModalContent() {
         quality: 0.5,
       });
 
-      if (!result.cancelled) {
+      if (!result.canceled) {
         // Use the "assets" array instead of "uri" to access selected asset(s)
         let selectedAsset = result.assets[0]; // Assuming only one asset is selected
+        
+
+        setImageUrl(result.uri);
+
 
         let newFile = {
           uri: selectedAsset.uri,
@@ -60,6 +67,7 @@ export default function ModalContent() {
           name: `test.${selectedAsset.uri.split(".")[1]}`,
         };
         handleUpload(newFile);
+        Alert.alert('Imagem carregada com sucesso!');
       }
     } else {
       Alert.alert('Você deve dar permissão para executar');
@@ -76,6 +84,41 @@ export default function ModalContent() {
       .then(data => { inputHndl('picture', data.url); }); // cloudinary yuklenenden sora gelen datani state guncelliyirik,data cloudinaryden gelir
   }
 
+
+  const sendImageUrlToServer = async () => {
+    if (imageUrl) {
+      try {
+
+        const id = await SecureStore.getItemAsync('idUser');
+        const token = await SecureStore.getItemAsync('token')
+
+        const response = await fetch(`https://api-yourdp.onrender.com/user/${id}/ausencia`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ ausencia:{
+            dia: dataInput,
+            motivo: motivo,
+            explicacao: observacao,
+            arquivo: imageUrl,
+            statusAusencia: false
+          } }),
+        });
+
+        const data = await response.json();
+        console.log('POST response:', data);
+        // Aqui você pode fazer o tratamento necessário após a resposta do POST
+        Alert.alert('Ausencia enviada');
+
+      } catch (error) {
+        console.error('Error on POST request:', error);
+      }
+    } else {
+      Alert.alert('Por favor, carregue uma imagem antes de enviar.');
+    }
+  };
 
 
   return (
@@ -105,7 +148,7 @@ export default function ModalContent() {
           {/* <Text style={styles.label}>Data de Solicitação</Text> */}
           <TextInput
             style={styles.inputDate}
-            value={data}
+            value={dataInput}
             onChangeText={setData}
             label="Data"
             mode='outlined'
@@ -129,7 +172,7 @@ export default function ModalContent() {
           <Text style={[styles.btnText, { color: '#2D1CC6' }]}>Subir imagem</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
+        <TouchableOpacity style={styles.btn} onPress={sendImageUrlToServer}>
           <Text style={styles.btnText}>Enviar</Text>
         </TouchableOpacity>
       </SafeAreaView>
