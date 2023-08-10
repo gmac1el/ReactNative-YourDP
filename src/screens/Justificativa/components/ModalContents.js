@@ -3,6 +3,7 @@ import React, { useState, createRef } from "react";
 import { View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
+// import * as DocumentPicker from 'expo-document-picker'; 
 //import * as Permissions from 'expo-permissions'; //
 import * as MediaLibrary from 'expo-media-library';
 import * as SecureStore from 'expo-secure-store';
@@ -60,7 +61,7 @@ export default function ModalContent({ onModalClose }) {
         let selectedAsset = result.assets[0]; // Assuming only one asset is selected
 
 
-        setImageUrl(result.uri);
+        setImageUrl(selectedAsset.uri);
 
 
         let newFile = {
@@ -76,21 +77,18 @@ export default function ModalContent({ onModalClose }) {
     }
   };
 
-  const inputHndl = (key, value) => {
-    // Implemente a lógica para lidar com a atualização do estado ou qualquer outra ação necessária.
-    console.log(`Chave: ${key}, Valor: ${value}`);
-  };
-  
+
+
 
   const handleUpload = (image) => {
-    
+
     const data = new FormData();
     data.append('file', image);
     data.append('upload_preset', 'ml_default');
     data.append('cloud_name', 'dkt07q4bz');
     fetch("https://api.cloudinary.com/v1_1/dkt07q4bz/image/upload", { method: 'post', body: data })
       .then(res => res.json())
-      // .then(data => { inputHndl('picture', data.url); });
+    // .then(data => { inputHndl('picture', data.url); });
   }
 
 
