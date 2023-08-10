@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
+
+
 import * as SecureStore from 'expo-secure-store';
+import Toast from "react-native-toast-message";
 export function TopBar({ onUserDataLoaded }) {
 
   const [userData, setUserData] = useState(null);

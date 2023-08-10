@@ -1,50 +1,82 @@
-import { useState } from "react";
-import { ScrollView, Text, StyleSheet, View, Image } from "react-native"
+import { useEffect, useState } from "react";
+import { ScrollView, Text, StyleSheet, View, Image, Alert, FlatList } from "react-native"
 
 import { TopBar } from "../../components/Topbar"
 import { Container } from "../Styles"
 
+import * as SecureStore from 'expo-secure-store';
+
 export function Ferias() {
 
   const [userData, setUserData] = useState(null);
+  const [userListFerias, setUserListFerias] = useState({})
 
   const handleUserDataLoaded = (data) => {
     setUserData(data.msg.ponto);
   };
+
+
+  const fetchListFerias = async () => {
+    const id = await SecureStore.getItemAsync('idUser');
+
+    try {
+
+      const response = await fetch(`https://api-yourdp.onrender.com/user/${id}/listFerias`, {
+        'Content-Type': 'application/json',
+      })
+
+      const data = await response.json()
+      const newData = await data.msg.slice(1)
+      setUserListFerias(newData)
+      console.log(data)
+
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    fetchListFerias()
+  }, [])
+
+
+  const renderCardFerias = ({ item }) => {
+
+    return (
+      <View style={styles.card}>
+        <Image source={require('../../../assets/card.png')} style={[styles.image, { alignSelf: 'center' }]} />
+        <Text style={styles.text}>Férias Solicitadas</Text>
+        <Text style={styles.text0}>Dias de Férias</Text>
+        <Text style={styles.text1}>Status</Text>
+        <Text style={styles.text3} >{item.status == false ? 'Solicitação \n Pendente' : 'Solicitação \n aprovada'}</Text>
+        <Text style={styles.text4}>Início das Férias</Text>
+        <Text style={styles.text5}>Término das Férias</Text>
+        <Text style={styles.text6}>{item.inicio}</Text>
+        <Text style={styles.text7}>{item.fim}</Text>
+        <Text style={styles.text2}>{item.dias}</Text>
+      </View>
+    )
+
+  }
 
   return (
     <Container>
       <ScrollView stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollStyle} style={{ width: '100%' }}>
         <TopBar onUserDataLoaded={handleUserDataLoaded} />
 
-        <View style={styles.container}>
-          <View style={styles.card}>
-            <Image source={require('../../../assets/card.png')} style={[styles.image, { alignSelf: 'center' }]} />
-            <Text style={styles.text}>Férias Solicitadas</Text>
-            <Text style={styles.text0}>Dias de Férias</Text>
-            <Text style={styles.text1}>Status</Text>
-            <Text style={styles.text3} >Solicitação {'\n'}aprovada</Text>
-            <Text style={styles.text4}>Início das Férias</Text>
-            <Text style={styles.text5}>Término das Férias</Text>
-            <Text style={styles.text6}>2022-12-06</Text>
-            <Text style={styles.text7}>2022-12-26</Text>
-            <Text style={styles.text2}>20 dias</Text>
-          </View>
-          <View style={styles.card}>
-            <Image source={require('../../../assets/card.png')} style={[styles.image, { alignSelf: 'center' }]} />
-            <Text style={styles.text}>Férias Solicitadas</Text>
-            <Text style={styles.text0}>Dias de Férias</Text>
-            <Text style={styles.text1}>Status</Text>
-            <Text style={styles.text3} >Solicitação {'\n'}aprovada</Text>
-            <Text style={styles.text4}>Início das Férias</Text>
-            <Text style={styles.text5}>Término das Férias</Text>
-            <Text style={styles.text6}>2022-12-06</Text>
-            <Text style={styles.text7}>2022-12-26</Text>
-            <Text style={styles.text2}>20 dias</Text>
-          </View>
-        </View>
 
+      
+        
       </ScrollView>
+      <FlatList
+        style={{marginTop: 0, paddingTop:0}}
+        data={userListFerias}
+        keyExtractor={(item) => item._id}
+        renderItem={renderCardFerias}
+        showsVerticalScrollIndicator={false} 
+        initialNumToRender={renderCardFerias.length == 0 ? 0 : renderCardFerias.length}
+        initialScrollIndex={0}
+      />
 
     </Container>
   )

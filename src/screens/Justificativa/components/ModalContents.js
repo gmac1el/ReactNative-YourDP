@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createRef } from "react";
 
 import { View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Modal, SafeAreaView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 
@@ -9,19 +9,21 @@ import * as SecureStore from 'expo-secure-store';
 
 
 import { TextInput } from 'react-native-paper';
+import { TextInputMask } from 'react-native-masked-text';
 
 
 
 
 
-
-export default function ModalContent() {
+export default function ModalContent({ onModalClose }) {
 
   const [motivo, setMotivo] = useState('');
   const [dataInput, setData] = useState('');
   const [observacao, setObservacao] = useState('');
 
   const [imageUrl, setImageUrl] = useState(null);
+
+  const ref = createRef();
 
   // const handleSubmit = () => {
   //   console.log('Motivo:', motivo);
@@ -56,7 +58,7 @@ export default function ModalContent() {
       if (!result.canceled) {
         // Use the "assets" array instead of "uri" to access selected asset(s)
         let selectedAsset = result.assets[0]; // Assuming only one asset is selected
-        
+
 
         setImageUrl(result.uri);
 
@@ -74,14 +76,21 @@ export default function ModalContent() {
     }
   };
 
+  const inputHndl = (key, value) => {
+    // Implemente a lógica para lidar com a atualização do estado ou qualquer outra ação necessária.
+    console.log(`Chave: ${key}, Valor: ${value}`);
+  };
+  
+
   const handleUpload = (image) => {
-    const data = new FormData(); // fetch ucun data hazirlayiriq
-    data.append('file', image);  // cloudinary ucun img file,hansiki imgpicker den gelir
-    data.append('upload_preset', 'ml_default'); // cloudinary ucun preset ti teyin edirik
-    data.append('cloud_name', 'dkt07q4bz'); // cloudinary ucun cloud ad
+    
+    const data = new FormData();
+    data.append('file', image);
+    data.append('upload_preset', 'ml_default');
+    data.append('cloud_name', 'dkt07q4bz');
     fetch("https://api.cloudinary.com/v1_1/dkt07q4bz/image/upload", { method: 'post', body: data })
       .then(res => res.json())
-      .then(data => { inputHndl('picture', data.url); }); // cloudinary yuklenenden sora gelen datani state guncelliyirik,data cloudinaryden gelir
+      // .then(data => { inputHndl('picture', data.url); });
   }
 
 
@@ -98,20 +107,22 @@ export default function ModalContent() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ ausencia:{
-            dia: dataInput,
-            motivo: motivo,
-            explicacao: observacao,
-            arquivo: imageUrl,
-            statusAusencia: false
-          } }),
+          body: JSON.stringify({
+            ausencia: {
+              dia: dataInput,
+              motivo: motivo,
+              explicacao: observacao,
+              arquivo: imageUrl,
+              statusAusencia: false
+            }
+          }),
         });
 
         const data = await response.json();
         console.log('POST response:', data);
         // Aqui você pode fazer o tratamento necessário após a resposta do POST
         Alert.alert('Ausencia enviada');
-
+        onModalClose();
       } catch (error) {
         console.error('Error on POST request:', error);
       }
@@ -141,18 +152,34 @@ export default function ModalContent() {
             onChangeText={setMotivo}
             label='Motivo'
             mode='outlined'
+            activeOutlineColor="#2D1CC6"
+            textColor="#2D1CC6"
           />
         </View>
 
         <View style={styles.inputDateFerias}>
           {/* <Text style={styles.label}>Data de Solicitação</Text> */}
+
           <TextInput
-            style={styles.inputDate}
-            value={dataInput}
-            onChangeText={setData}
             label="Data"
-            mode='outlined'
+            mode="outlined"
+            activeOutlineColor="#2D1CC6"
+            textColor="#2D1CC6"
+            render={(props) => (
+              <TextInputMask
+                {...props}
+                value={dataInput}
+                type="datetime"
+                options={{
+                  format: 'DD/MM/YYYY'
+                }}
+                ref={ref}
+                onChangeText={(text) => setData(text)}
+              />
+            )}
           />
+
+
         </View>
 
         <View style={styles.observation}>
@@ -161,7 +188,8 @@ export default function ModalContent() {
             style={styles.subject}
             value={observacao}
             onChangeText={setObservacao}
-
+            activeOutlineColor="#2D1CC6"
+            textColor="#2D1CC6"
             multiline
             label="Observação"
             mode='outlined'
