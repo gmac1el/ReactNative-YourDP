@@ -25,7 +25,7 @@ export default function ModalContent({ onModalClose }) {
   const [imageUrl, setImageUrl] = useState(null);
 
   const ref = createRef();
-
+  const inputRef = useRef(null);
   // const handleSubmit = () => {
   //   console.log('Motivo:', motivo);
   //   console.log('Data:', data);
@@ -35,7 +35,9 @@ export default function ModalContent({ onModalClose }) {
   const handleUploadImage = () => {
     console.log('Imagem enviada');
   };
-
+  const handleFocus = () => {
+    inputRef.current.getElement().focus();
+  };
   const [userData, setUserData] = useState(null);
 
   // const handleUserDataLoaded = (data) => {
@@ -163,6 +165,7 @@ export default function ModalContent({ onModalClose }) {
             mode="outlined"
             activeOutlineColor="#2D1CC6"
             textColor="#2D1CC6"
+            onFocus={handleFocus}
             render={(props) => (
               <TextInputMask
                 {...props}

@@ -134,6 +134,72 @@ export function ButtonPoint(props) {
     }
   };
 
+  const handleUpdateUpdateBreak = async () => {
+    const token = await SecureStore.getItemAsync('token');
+    const id = await SecureStore.getItemAsync('idUser');
+    console.log(token, id);
+    const url = `https://api-yourdp.onrender.com/user/${id}/updateBreak`;
+    const timeString = date.toLocaleTimeString([], timeOptions);
+
+    const requestOptions = {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        intervalo: timeString
+      })
+    };
+
+    try {
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+
+      if (data.msg) {
+        Alert.alert(data.msg);
+      } else {
+        Alert.alert('Erro ao cadastrar o ponto');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateUpdateBreakLast= async () => {
+    const token = await SecureStore.getItemAsync('token');
+    const id = await SecureStore.getItemAsync('idUser');
+    console.log(token, id);
+    const url = `https://api-yourdp.onrender.com/user/${id}/updateBreakLast`;
+    const timeString = date.toLocaleTimeString([], timeOptions);
+
+    const requestOptions = {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        volta: timeString
+      })
+    };
+
+    try {
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+
+      if (data.msg) {
+        Alert.alert(data.msg);
+      } else {
+        Alert.alert('Erro ao cadastrar o ponto');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
   const ShowNotification = props.Status ? showToast : handleAuthent;
 
   //PEGAR TEMPO 
@@ -158,7 +224,7 @@ export function ButtonPoint(props) {
 
           <View style={styles.viewCardButton}>
 
-            <TouchableOpacity style={styles.cardButton}>
+            <TouchableOpacity style={styles.cardButton} onPress={handleUpdatePoint}>
               <View style={styles.titleCardButton}>
                 <Text style={[styles.textCardButton, { fontSize: 35 }]}>1</Text>
                 <Text style={[styles.textCardButton, { fontWeight: '400' }]}>Entrada</Text>
@@ -170,7 +236,7 @@ export function ButtonPoint(props) {
 
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#00B4D8' }]}>
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#00B4D8' }]} onPress={handleUpdateUpdateBreak}>
               <View style={styles.titleCardButton}>
                 <Text style={[styles.textCardButton, { fontSize: 35, color: '#001d3d' }]}>2</Text>
                 <Text style={[styles.textCardButton, { fontWeight: '400', color: '#001d3d' }]}>Pausa</Text>
@@ -183,9 +249,9 @@ export function ButtonPoint(props) {
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.viewCardButton, {marginTop: 15}]}>
+          <View style={[styles.viewCardButton, { marginTop: 15 }]}>
 
-            <TouchableOpacity style={[styles.cardButton, {backgroundColor: '#90E0EF'}]}>
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#90E0EF' }]}  onPress={handleUpdateUpdateBreakLast}>
               <View style={styles.titleCardButton}>
                 <Text style={[styles.textCardButton, { fontSize: 35, color: '#001d3d' }]}>3</Text>
                 <Text style={[styles.textCardButton, { fontWeight: '400', color: '#001d3d' }]}>Retorno</Text>
@@ -197,10 +263,10 @@ export function ButtonPoint(props) {
 
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#03045E' }]}>
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: '#03045E' }]} onPress={handleUpdateLastPoint}>
               <View style={styles.titleCardButton}>
                 <Text style={[styles.textCardButton, { fontSize: 35 }]}>4</Text>
-                <Text style={[styles.textCardButton, { fontWeight: '400'}]}>Saida</Text>
+                <Text style={[styles.textCardButton, { fontWeight: '400' }]}>Saida</Text>
               </View>
 
               <View style={styles.iconCardButton}>
